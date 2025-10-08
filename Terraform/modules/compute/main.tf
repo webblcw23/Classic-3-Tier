@@ -36,8 +36,9 @@ source_image_reference {
   publisher = "Canonical"
   offer     = "UbuntuServer"
   sku       = "18.04-LTS"
-  version   = "18.04.202309190"
+  version   = "18.04.202401161"
 }
+
 }
 
 # Backend NIC and VM
@@ -79,8 +80,9 @@ source_image_reference {
   publisher = "Canonical"
   offer     = "UbuntuServer"
   sku       = "18.04-LTS"
-  version   = "18.04.202309190"
+  version   = "18.04.202401161"
 }
+
 }
 
 # Database NIC. No VM needed as using Azure SQL

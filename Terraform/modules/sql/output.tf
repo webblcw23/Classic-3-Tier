@@ -5,3 +5,5 @@ output "sql_server_name" {
 output "sql_db_name" {
   value = azurerm_mssql_database.sql_db.name
 }
+
+

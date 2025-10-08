@@ -27,3 +27,4 @@ variable "private_dns_zone_id" {
   type        = string
   description = "ID of the Private DNS Zone for Azure SQL"
 }
+

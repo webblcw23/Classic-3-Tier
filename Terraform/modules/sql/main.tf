@@ -8,7 +8,7 @@ resource "azurerm_mssql_server" "sql_server" {
   administrator_login_password = var.sql_admin_password
 }
 
-# Create a SQL Database
+# Create a SQL Database - lives on the SQL Server above
 resource "azurerm_mssql_database" "sql_db" {
   name               = "sqldb"
   server_id          = azurerm_mssql_server.sql_server.id
@@ -19,6 +19,12 @@ resource "azurerm_mssql_database" "sql_db" {
   read_scale         = false
   storage_account_type = "Local"
 }
+
+resource "azurerm_private_dns_zone" "sql_dns" {
+  name                = "privatelink.database.windows.net"
+  resource_group_name = var.resource_group_name
+}
+
 
 # Create a Private Endpoint for the SQL Server with embedded DNS Zone Group
 resource "azurerm_private_endpoint" "sql_pe" {
@@ -33,5 +39,12 @@ resource "azurerm_private_endpoint" "sql_pe" {
     is_manual_connection           = false
     subresource_names              = ["sqlServer"]
   }
-
+  
+private_dns_zone_group {
+  name                  = "sql-dns-zone-group"
+  private_dns_zone_ids  = [azurerm_private_dns_zone.sql_dns.id]
 }
+}
+
+
+

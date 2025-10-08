@@ -1,72 +1,94 @@
-💡 Azure Interview-Ready Infrastructure: Secure SQL + Bastion Access
-📌 Project Overview
-This Terraform-based Azure infrastructure project provisions a secure, multi-tier network with:
+# 🔐 Azure Multi-Tier Network with Private SQL Integration
 
-🔐 Managed Azure SQL Database behind a Private Endpoint
+This project provisions a secure, multi-tier Azure infrastructure using Terraform. It includes isolated subnets for frontend, backend, database, and Bastion access, with a managed Azure SQL Server connected via Private Endpoint and DNS zone integration.
 
-🧱 Subnet-level isolation with NSGs for frontend, backend, and DB tiers
+---
 
-🛡️ Azure Bastion for secure VM access—no public IPs
+## 🧱 Infrastructure Overview
 
-📦 Modular Terraform architecture for reusability and clarity
+### 🔹 Virtual Network
 
-Designed to showcase platform engineering skills for infrastructure-focused interviews.
+- **Name**: `VirtualNetwork`
+- **Address Space**: `10.0.0.0/16`
+- **Location**: `${var.location}`
 
-🧱 Architecture Summary
-Layer	Resources
-Networking	VNet with isolated subnets: frontend, backend, db, bastion
-Security	NSGs with precise inbound rules (HTTP, app port, SQL 1433)
-Compute	Linux VMs (frontend + backend) with Bastion-only access
-Database	Azure SQL Server + Database with Private Endpoint
-DNS	Private DNS Zone linked to VNet for internal name resolution
-🚀 Deployment Steps
-Initialize Terraform
+### 🔹 Subnet Layout
+
+| Subnet Name         | Address Prefix   | Purpose                                |
+|---------------------|------------------|----------------------------------------|
+| `subnet-frontend`   | `10.0.1.0/24`     | Hosts frontend VM                      |
+| `subnet-backend`    | `10.0.2.0/24`     | Hosts backend VM (Bastion-accessible) |
+| `subnet-db`         | `10.0.3.0/24`     | Hosts Azure SQL Private Endpoint       |
+| `AzureBastionSubnet`| `10.0.4.0/24`     | Dedicated subnet for Bastion host      |
+
+---
+
+## 🖥️ Virtual Machines
+
+### 🔹 Frontend VM
+
+- Deployed in `subnet-frontend`
+- SSH accessible via public IP or Bastion
+- Intended to host web app or API
+- Can connect to backend or SQL tier
+
+### 🔹 Backend VM
+
+- Deployed in `subnet-backend`
+- SSH access via Azure Bastion
+- Connects securely to Azure SQL via Private Endpoint
+- Used for internal logic and database queries
+
+---
+
+## 🗄️ Azure SQL Integration
+
+### ✅ Provisioned Resources
+
+- **SQL Server**: `sql-server-lewis-test`
+- **SQL Database**: `sqldb`
+- **Private Endpoint**: Deployed in `subnet-db`
+- **Private DNS Zone**: `privatelink.database.windows.net`
+- **DNS Zone Group**: Attached to Private Endpoint
+- **VNet Link**: DNS zone linked to backend VNet
+
+### 🔒 Security
+
+- No public access to SQL Server
+- NSG rules restrict traffic to port 1433 from backend subnet only
+- DNS resolution scoped to VNet via Private DNS Zone
+
+---
+
+## 🧪 Connectivity Validation
+
+### 🔹 DNS Resolution
 
 bash
-terraform init
-Review Plan
+nslookup sql-server-lewis-test.database.windows.net
 
-bash
-terraform plan
-Apply Infrastructure
 
-bash
-terraform apply
-Verify Resources
+🔐 Bastion Access
+Bastion host deployed in AzureBastionSubnet
 
-SQL Server and DB deployed
+Used for secure SSH access to backend VM
 
-Private Endpoint in DB subnet
+No public IPs exposed on backend resources
 
-Bastion host reachable
+📦 Terraform Modules
+Modular structure for VNet, NSGs, SQL, Private Endpoint, and DNS
 
-NSGs correctly linked
+Explicit resource wiring for traceability and hygiene
 
-🔍 Connectivity Testing
-After deployment:
+Variables used for location, resource group, subnet IDs, and credentials
 
-SSH into backend VM via Bastion
+📌 Next Steps
+Deploy frontend app or API to frontend VM
 
-Run:
+Harden NSG rules for frontend-to-backend or frontend-to-SQL access
 
-bash
-nslookup <sql-server-name>.database.windows.net
-sqlcmd -S <sql-server-name>.database.windows.net -U <admin> -P <password>
-📁 Module Structure
-Code
-modules/
-├── network/       # VNet, subnets
-├── nsg/           # NSGs and associations
-├── compute/       # Linux VMs
-├── bastion/       # Bastion host
-├── sql/           # SQL Server, DB, Private Endpoint
-🧠 Key Concepts Demonstrated
-Azure Private Endpoint + DNS zone integration
+Move SQL credentials to Key Vault
 
-Bastion-only VM access (no public IPs)
+Add architecture diagram and flow documentation
 
-NSG rule design with CIDR-based isolation
-
-Terraform module composition and variable passing
-
-Interview-grade infrastructure polish
+Refactor modules for reusability and portfolio polish
