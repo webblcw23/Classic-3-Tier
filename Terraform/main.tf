@@ -77,3 +77,41 @@ module "sql" {
   db_subnet_id         = module.network.subnet_ids["db"]
   private_dns_zone_id  = azurerm_private_dns_zone.sql_dns.id
 }
+
+
+
+
+# Create a Key Vault using module
+module "keyvault" {
+  source              = "./modules/keyvault"
+  key_vault_name      = "kv-lewis-secure"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  admin_object_id     = data.azurerm_client_config.current.object_id
+}
+
+# Get tenant_id and object_id of current user to set as admin of Key Vault
+data "azurerm_client_config" "current" {}
+
+# Create an RBAC group for Key Vault access
+resource "azuread_group" "kv_access_group" {
+  display_name = "KeyVaultAccessGroup"
+  security_enabled = true
+}
+
+# Add current user to the Key Vault access group
+resource "azuread_group_member" "lewis_in_group" {
+  group_object_id  = azuread_group.kv_access_group.id
+  member_object_id = data.azurerm_client_config.current.object_id
+}
+
+# Assign Key Vault access policy to the access group
+resource "azurerm_role_assignment" "kv_group_access" {
+  scope                = module.keyvault.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azuread_group.kv_access_group.id
+}
+
+
+

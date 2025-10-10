@@ -34,4 +34,11 @@ variable "sql_admin_password" {
   description = "SQL admin password for Azure SQL Server"
 }
 
+# Key Vault Variables
+variable "key_vault_name" {
+  description = "The name of the Key Vault"
+  type        = string
+  default     = "kv-lewis-secure"
+}
+
 
