@@ -68,27 +68,55 @@ bash
 nslookup sql-server-lewis-test.database.windows.net
 
 
-🔐 Bastion Access
+## 🔐 Bastion Access
 Bastion host deployed in AzureBastionSubnet
 
 Used for secure SSH access to backend VM
 
 No public IPs exposed on backend resources
 
-📦 Terraform Modules
+## 📦 Terraform Modules
 Modular structure for VNet, NSGs, SQL, Private Endpoint, and DNS
 
 Explicit resource wiring for traceability and hygiene
 
 Variables used for location, resource group, subnet IDs, and credentials
 
-📌 Next Steps
+## 🔐 Azure Key Vault Integration
+This project includes a secure, RBAC-based Azure Key Vault setup designed for scalable secret management and enterprise-grade access control.
+
+### ✅ Features
+Terraform-provisioned Key Vault with soft delete and purge protection
+
+RBAC access model (no classic access policies)
+
+Azure AD group created via Terraform for centralized access
+
+Current user added to the group automatically
+
+Group assigned Key Vault Secrets User role via azurerm_role_assignment
+
+SSH private key uploaded manually via Azure CLI for secure testing
+
+### 🔧 Manual Secret Upload (Example)
+bash
+az keyvault secret set --vault-name kv-lewis-secure --name ssh-private-key --file ~/.ssh/id_rsa
+
+### 📁 Terraform Highlights
+hcl
+resource "azuread_group" "kv_access_group" { ... }
+
+resource "azuread_group_member" "lewis_in_group" { ... }
+
+resource "azurerm_role_assignment" "kv_group_access" { ... }
+
+resource "azurerm_key_vault" "kv" { ... }
+### 🧠 Access Model
+Access is granted via Azure Entra ID using RBAC. No passwords or access policies are used. Only members of the provisioned group can access secrets.
+
+## 📌 Next Steps
 Deploy frontend app or API to frontend VM
 
 Harden NSG rules for frontend-to-backend or frontend-to-SQL access
 
-Move SQL credentials to Key Vault
-
 Add architecture diagram and flow documentation
-
-Refactor modules for reusability and portfolio polish
