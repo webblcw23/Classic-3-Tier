@@ -5,7 +5,7 @@ resource "azurerm_virtual_network" "vnet" {
   name                = "VirtualNetwork"
   address_space       = ["10.0.0.0/16"]
   location            = var.location
-  resource_group_name = var.resource_group_name 
+  resource_group_name = var.resource_group_name
 }
 
 # Subnet 1 - FrontEnd
@@ -41,3 +41,20 @@ resource "azurerm_subnet" "subnet-bastion" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.4.0/24"]
 }
+
+# front end integration subnet
+resource "azurerm_subnet" "frontend_integreation_subnet" {
+  name                 = "frontend_integreation_subnet"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.5.0/24"]
+
+  delegation {
+    name = "frontend-delegation"
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
+}
+

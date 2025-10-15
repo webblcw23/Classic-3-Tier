@@ -11,9 +11,10 @@ output "vnet_id" {
 
 output "subnet_ids" {
   value = {
-    frontend = azurerm_subnet.subnet-frontend.id
-    backend  = azurerm_subnet.subnet-backend.id
-    db       = azurerm_subnet.subnet-db.id
-    bastion  = azurerm_subnet.subnet-bastion.id
-}
+    frontend             = azurerm_subnet.subnet-frontend.id
+    backend              = azurerm_subnet.subnet-backend.id
+    db                   = azurerm_subnet.subnet-db.id
+    bastion              = azurerm_subnet.subnet-bastion.id
+    frontend_integration = azurerm_subnet.frontend_integreation_subnet.id
+  }
 }

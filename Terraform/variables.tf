@@ -14,13 +14,13 @@ variable "location" {
 
 variable "subscription_id" {
   description = "The Azure Subscription ID"
-  type        = string  
+  type        = string
 }
 
 # VM Admin Passwords - so they are not hardcoded in main.tf
 variable "sshadmin_key" {
   description = "SSH Public Key for Linux VMs"
-  type        = string  
+  type        = string
 }
 
 # SQL Admin Credentials
@@ -32,6 +32,7 @@ variable "sql_admin_username" {
 variable "sql_admin_password" {
   type        = string
   description = "SQL admin password for Azure SQL Server"
+  sensitive   = true
 }
 
 # Key Vault Variables
