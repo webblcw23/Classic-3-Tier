@@ -1,0 +1,5 @@
+/Users/lewiswebb/Documents/Testing/macbook/DevOps/Classic-3-Tier/MovieApp/publish/MovieExplorer.API
+/Users/lewiswebb/Documents/Testing/macbook/DevOps/Classic-3-Tier/MovieApp/publish/MovieExplorer.API.dll
+/Users/lewiswebb/Documents/Testing/macbook/DevOps/Classic-3-Tier/MovieApp/publish/MovieExplorer.API.deps.json
+/Users/lewiswebb/Documents/Testing/macbook/DevOps/Classic-3-Tier/MovieApp/publish/MovieExplorer.API.runtimeconfig.json
+/Users/lewiswebb/Documents/Testing/macbook/DevOps/Classic-3-Tier/MovieApp/publish/MovieExplorer.API.pdb

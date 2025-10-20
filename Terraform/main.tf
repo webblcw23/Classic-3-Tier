@@ -22,6 +22,16 @@ resource "azurerm_container_registry" "acr" {
 }
 
 
+# Storage Account 
+resource "azurerm_storage_account" "functions_storage" {
+  name                     = "lewisfuncstorage"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+
 
 # Create a virtual network using module
 module "network" {
@@ -38,33 +48,6 @@ module "nsg" {
   frontend_subnet_id  = module.network.subnet_ids["frontend"]
   backend_subnet_id   = module.network.subnet_ids["backend"]
   db_subnet_id        = module.network.subnet_ids["db"]
-}
-
-# Create VMs (incluiding NICs) using module
-module "compute" {
-  source              = "./modules/compute"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-
-  #Subnets
-  frontend_subnet_id = module.network.subnet_ids["frontend"]
-  backend_subnet_id  = module.network.subnet_ids["backend"]
-  db_subnet_id       = module.network.subnet_ids["db"]
-
-  #NSGs
-  frontend_nsg_id = module.nsg.nsg_ids["frontend"]
-  backend_nsg_id  = module.nsg.nsg_ids["backend"]
-  db_nsg_id       = module.nsg.nsg_ids["db"]
-
-  #Pass through passwords from tfvars for each VM
-  sshadmin_key = var.sshadmin_key
-}
-# Create a Bastion host using module
-module "bastion" {
-  source              = "./modules/bastion"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  bastion_subnet_id   = module.network.subnet_ids["bastion"]
 }
 
 # Link the VNet to the Private DNS Zone (after VNet and DNS Zone created)
@@ -99,6 +82,25 @@ module "keyvault" {
   admin_object_id     = data.azurerm_client_config.current.object_id
 }
 
+############################### Permission Setup for SQL Access ###################################
+# Assign SQL Contributor role to the (frontend) Web App's managed identity
+resource "azurerm_role_assignment" "kv_access_backend" {
+  principal_id         = module.backend_webapp.webapp_identity_principal_id
+  role_definition_name = "Key Vault Secrets User"
+  scope                = module.keyvault.key_vault_id
+}
+
+# Assign SQL Contributor role to the backend Web App's managed identity
+resource "azurerm_role_assignment" "sql_access_backend" {
+  principal_id         = module.backend_webapp.webapp_identity_principal_id
+  role_definition_name = "Contributor"
+  scope                = module.sql.sql_server_id
+}
+
+
+
+
+################################ Permission Setup for Key Vault Access ##################################
 # Get tenant_id and object_id of current user to set as admin of Key Vault
 data "azurerm_client_config" "current" {}
 
@@ -125,6 +127,9 @@ resource "azurerm_role_assignment" "kv_group_access" {
   principal_id         = azuread_group.kv_access_group.object_id
 }
 
+
+################################ Web App Setup ##################################
+
 # App service plan in the root
 resource "azurerm_service_plan" "webapp_plan" {
   name                = "lewis-webapp-plan"
@@ -142,9 +147,9 @@ module "webapp" {
   app_service_plan_id = azurerm_service_plan.webapp_plan.id
   acr_login_server    = azurerm_container_registry.acr.login_server
 
-  image_name   = "rangersapp"
+  image_name   = "movieexplorer-ui"
   image_tag    = "latest"
-  web_app_name = "lewisRangersApp"
+  web_app_name = "MovieExplorerAppFrontend"
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "webapp_vnet" {
@@ -160,6 +165,35 @@ resource "azurerm_role_assignment" "acr_pull" {
   role_definition_name = "AcrPull"
   scope                = azurerm_container_registry.acr.id
 }
+
+
+
+################################ Backend API Setup ##################################
+module "backend_webapp" {
+  source              = "./modules/backend_webapp"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  app_service_plan_id = azurerm_service_plan.webapp_plan.id
+  acr_login_server    = azurerm_container_registry.acr.login_server
+
+  image_name   = "movieexplorer-api"
+  image_tag    = "latest"
+  web_app_name = "MovieExplorerAppBackend"
+}
+
+# Link backend web app to VNet and backend subnet 
+resource "azurerm_app_service_virtual_network_swift_connection" "backend_vnet" {
+  app_service_id = module.backend_webapp.webapp_id
+  subnet_id      = module.network.subnet_ids["backend"]
+}
+
+# Assign ACR Pull role to the backend Web App's managed identity
+resource "azurerm_role_assignment" "acr_pull_backend" {
+  principal_id         = module.backend_webapp.webapp_identity_principal_id
+  role_definition_name = "AcrPull"
+  scope                = azurerm_container_registry.acr.id
+}
+
 
 
 

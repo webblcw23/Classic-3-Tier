@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "QOtU9Ro0zM86SzuhnpKtF119qu4Vy2kcSg1iP/dgFLI=",
+  "Source": "MovieExplorer.API",
+  "BasePath": "_content/MovieExplorer.API",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
