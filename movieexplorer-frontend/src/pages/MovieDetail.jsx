@@ -6,7 +6,7 @@ function MovieDetail() {
     const [movie, setMovie] = useState(null);
 
     useEffect(() => {
-        fetch(`http://localhost:5050/movies/${id}`)
+        fetch(`${import.meta.env.VITE_API_URL}/movies/${id}`)
             .then(res => res.json())
             .then(data => setMovie(data))
             .catch(err => console.error(err));

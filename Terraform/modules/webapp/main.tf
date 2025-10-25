@@ -22,5 +22,6 @@ resource "azurerm_linux_web_app" "web_app" {
   app_settings = {
     "WEBSITES_PORT"    = "80"
     "DOCKER_ENABLE_CI" = "true"
+    "VITE_API_URL"     = "https://movieexplorerappbackend.azurewebsites.net"
   }
 }

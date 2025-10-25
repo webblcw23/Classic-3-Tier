@@ -22,5 +22,12 @@ resource "azurerm_linux_web_app" "backend_web_app" {
   app_settings = {
     "WEBSITES_PORT"    = "80"
     "DOCKER_ENABLE_CI" = "true"
+
+
+    # SQL connection settings
+    "DB_SERVER"   = "${var.sql_server_name}.database.windows.net"
+    "DB_NAME"     = var.sql_db_name
+    "DB_USER"     = var.sql_admin_username
+    "DB_PASSWORD" = var.sql_admin_password
   }
 }

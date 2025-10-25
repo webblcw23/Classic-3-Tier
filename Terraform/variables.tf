@@ -4,6 +4,7 @@ variable "resource_group_name" {
   description = "The name of the resource group"
   type        = string
   default     = "Network-Proj-RG"
+  # default     = "Movie-Explorer-RG"
 }
 
 variable "location" {
@@ -17,11 +18,6 @@ variable "subscription_id" {
   type        = string
 }
 
-# VM Admin Passwords - so they are not hardcoded in main.tf
-variable "sshadmin_key" {
-  description = "SSH Public Key for Linux VMs"
-  type        = string
-}
 
 # SQL Admin Credentials
 variable "sql_admin_username" {

@@ -10,19 +10,14 @@ resource "azurerm_mssql_server" "sql_server" {
 
 # Create a SQL Database - lives on the SQL Server above
 resource "azurerm_mssql_database" "sql_db" {
-  name               = "sqldb"
-  server_id          = azurerm_mssql_server.sql_server.id
-  sku_name           = "Basic"
-  max_size_gb        = 2
-  zone_redundant     = false
-  collation          = "SQL_Latin1_General_CP1_CI_AS"
-  read_scale         = false
+  name                 = "sqldb"
+  server_id            = azurerm_mssql_server.sql_server.id
+  sku_name             = "Basic"
+  max_size_gb          = 2
+  zone_redundant       = false
+  collation            = "SQL_Latin1_General_CP1_CI_AS"
+  read_scale           = false
   storage_account_type = "Local"
-}
-
-resource "azurerm_private_dns_zone" "sql_dns" {
-  name                = "privatelink.database.windows.net"
-  resource_group_name = var.resource_group_name
 }
 
 
@@ -39,11 +34,11 @@ resource "azurerm_private_endpoint" "sql_pe" {
     is_manual_connection           = false
     subresource_names              = ["sqlServer"]
   }
-  
-private_dns_zone_group {
-  name                  = "sql-dns-zone-group"
-  private_dns_zone_ids  = [azurerm_private_dns_zone.sql_dns.id]
-}
+
+  private_dns_zone_group {
+    name                 = "sql-dns-zone-group"
+    private_dns_zone_ids = [var.private_dns_zone_id]
+  }
 }
 
 

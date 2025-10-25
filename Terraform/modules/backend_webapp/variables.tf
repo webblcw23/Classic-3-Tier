@@ -33,3 +33,25 @@ variable "image_tag" {
   type        = string
   description = "Docker image tag (e.g., latest)"
 }
+
+
+variable "sql_server_name" {
+  type        = string
+  description = "SQL Server name"
+}
+
+variable "sql_db_name" {
+  type        = string
+  description = "SQL Database name"
+}
+
+variable "sql_admin_username" {
+  type        = string
+  description = "SQL admin username"
+}
+
+variable "sql_admin_password" {
+  type        = string
+  description = "SQL admin password"
+
+}

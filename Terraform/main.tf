@@ -147,7 +147,7 @@ module "webapp" {
   app_service_plan_id = azurerm_service_plan.webapp_plan.id
   acr_login_server    = azurerm_container_registry.acr.login_server
 
-  image_name   = "movieexplorer-ui"
+  image_name   = "movieexplorer-frontend"
   image_tag    = "latest"
   web_app_name = "MovieExplorerAppFrontend"
 }
@@ -175,8 +175,13 @@ module "backend_webapp" {
   location            = var.location
   app_service_plan_id = azurerm_service_plan.webapp_plan.id
   acr_login_server    = azurerm_container_registry.acr.login_server
+  sql_server_name     = module.sql.sql_server_name
+  sql_db_name         = module.sql.sql_db_name
+  sql_admin_username  = var.sql_admin_username
+  sql_admin_password  = var.sql_admin_password
 
-  image_name   = "movieexplorer-api"
+
+  image_name   = "movieexplorer-backend"
   image_tag    = "latest"
   web_app_name = "MovieExplorerAppBackend"
 }
@@ -189,7 +194,16 @@ resource "azurerm_app_service_virtual_network_swift_connection" "backend_vnet" {
 
 # Assign ACR Pull role to the backend Web App's managed identity
 resource "azurerm_role_assignment" "acr_pull_backend" {
+
   principal_id         = module.backend_webapp.webapp_identity_principal_id
+  role_definition_name = "AcrPull"
+  scope                = azurerm_container_registry.acr.id
+}
+
+# Assign ACR Pull role to the frontend Web App's managed identity
+resource "azurerm_role_assignment" "acr_pull_frontend" {
+
+  principal_id         = module.webapp.webapp_identity_principal_id
   role_definition_name = "AcrPull"
   scope                = azurerm_container_registry.acr.id
 }
