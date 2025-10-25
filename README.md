@@ -1,122 +1,111 @@
-# 🔐 Azure Multi-Tier Network with Private SQL Integration
+# 🎬 MovieExplorer
 
-This project provisions a secure, multi-tier Azure infrastructure using Terraform. It includes isolated subnets for frontend, backend, database, and Bastion access, with a managed Azure SQL Server connected via Private Endpoint and DNS zone integration.
-
----
-
-## 🧱 Infrastructure Overview
-
-### 🔹 Virtual Network
-
-- **Name**: `VirtualNetwork`
-- **Address Space**: `10.0.0.0/16`
-- **Location**: `${var.location}`
-
-### 🔹 Subnet Layout
-
-| Subnet Name         | Address Prefix   | Purpose                                |
-|---------------------|------------------|----------------------------------------|
-| `subnet-frontend`   | `10.0.1.0/24`     | Hosts frontend VM                      |
-| `subnet-backend`    | `10.0.2.0/24`     | Hosts backend VM (Bastion-accessible) |
-| `subnet-db`         | `10.0.3.0/24`     | Hosts Azure SQL Private Endpoint       |
-| `AzureBastionSubnet`| `10.0.4.0/24`     | Dedicated subnet for Bastion host      |
+A cloud-native, full-stack movie browsing app built for recruiters and platform engineers alike. Designed to showcase modular Azure infrastructure, Dockerized deployment, and a polished UI/UX inspired by cinematic storytelling.
 
 ---
 
-## 🖥️ Virtual Machines
+## 🧩 Tech Stack
 
-### 🔹 Frontend VM
-
-- Deployed in `subnet-frontend`
-- SSH accessible via public IP or Bastion
-- Intended to host web app or API
-- Can connect to backend or SQL tier
-
-### 🔹 Backend VM
-
-- Deployed in `subnet-backend`
-- SSH access via Azure Bastion
-- Connects securely to Azure SQL via Private Endpoint
-- Used for internal logic and database queries
+| Layer        | Tech Used                              |
+|--------------|-----------------------------------------|
+| **Frontend** | React + Vite + Tailwind CSS             |
+| **Backend**  | Node.js + Express + mssql               |
+| **Database** | Azure SQL Database                      |
+| **Infra**    | Azure App Service + Azure Container Registry + Azure Key Vault |
+| **IaC**      | Terraform (modular, reusable architecture) |
+| **CI/CD**    | Azure DevOps Pipelines (coming soon)    |
 
 ---
 
-## 🗄️ Azure SQL Integration
+## 📸 Screenshots
 
-### ✅ Provisioned Resources
+Screenshots can be found in the Screenshots folder at the root of the project.
+or in my Portfolio Web Page - https://lewis-webb-portfolio-webpage-ezczesgjdtgmdfb3.uksouth-01.azurewebsites.net/# 
+---
 
-- **SQL Server**: `sql-server-lewis-test`
-- **SQL Database**: `sqldb`
-- **Private Endpoint**: Deployed in `subnet-db`
-- **Private DNS Zone**: `privatelink.database.windows.net`
-- **DNS Zone Group**: Attached to Private Endpoint
-- **VNet Link**: DNS zone linked to backend VNet
+## 🧠 Features
 
-### 🔒 Security
-
-- No public access to SQL Server
-- NSG rules restrict traffic to port 1433 from backend subnet only
-- DNS resolution scoped to VNet via Private DNS Zone
+- 🎞️ Browse a curated list of iconic films
+- 🔍 Click any movie card to view full details
+- 🧵 Clean, responsive UI with Tailwind styling
+- 🔐 Secrets managed via Azure Key Vault
+- 🐳 Dockerized frontend and backend
+- ☁️ Deployed to Azure App Services via ACR
+- 🧱 Modular Terraform infrastructure (3-tier architecture)
 
 ---
 
-## 🧪 Connectivity Validation
+## 📁 Project Structure
 
-### 🔹 DNS Resolution
+movieexplorer/ ├── frontend/ # React + Vite + Tailwind UI ├── backend/ # Express API with Azure SQL integration ├── terraform/ # Modular IaC for Azure resources └── README.md # You're reading it!
 
+## Code
+
+---
+
+## ⚙️ Local Development
+
+### Prerequisites
+
+- Node.js + npm
+- Docker
+- Azure CLI (for deployment)
+- Terraform CLI (for infra)
+
+### Run Locally
+
+Bash
+# Frontend
+cd frontend
+npm install
+npm run dev
+
+# Backend
+cd ../backend
+npm install
+node index.js
+📦 Deployment
+1. Build & Push Docker Images
 bash
-nslookup sql-server-lewis-test.database.windows.net
+# Frontend
+cd frontend
+npm run build
+docker build --platform linux/amd64 -t movieexplorer-frontend .
+docker tag movieexplorer-frontend lewisacr.azurecr.io/movieexplorer-frontend:latest
+docker push lewisacr.azurecr.io/movieexplorer-frontend:latest
 
+# Backend
+cd ../backend
+docker build --platform linux/amd64 -t movieexplorer-backend .
+docker tag movieexplorer-backend lewisacr.azurecr.io/movieexplorer-backend:latest
+docker push lewisacr.azurecr.io/movieexplorer-backend:latest
+2. Restart App Services
+Use Azure Portal or CLI to restart both frontend and backend App Services.
 
-## 🔐 Bastion Access
-Bastion host deployed in AzureBastionSubnet
+🧪 Validation
+✅ Movie cards show title, genre, year, and rating
 
-Used for secure SSH access to backend VM
+✅ Clicking a card shows full description
 
-No public IPs exposed on backend resources
+✅ “Back to Movie List” button returns to homepage
 
-## 📦 Terraform Modules
-Modular structure for VNet, NSGs, SQL, Private Endpoint, and DNS
+✅ API endpoints return expected JSON
 
-Explicit resource wiring for traceability and hygiene
+✅ All secrets injected via environment variables
 
-Variables used for location, resource group, subnet IDs, and credentials
+📚 Future Enhancements
+🔐 Add authentication (e.g., Azure AD B2C)
 
-## 🔐 Azure Key Vault Integration
-This project includes a secure, RBAC-based Azure Key Vault setup designed for scalable secret management and enterprise-grade access control.
+🧵 Add filtering/sorting by genre, year, rating
 
-### ✅ Features
-Terraform-provisioned Key Vault with soft delete and purge protection
+📦 Implement CI/CD with Azure DevOps Pipelines for full automation - Perhaps to add/deploy new films via sql deploy script
 
-RBAC access model (no classic access policies)
+📈 Add monitoring with Application Insights
 
-Azure AD group created via Terraform for centralized access
+🧪 Add unit and integration tests
 
-Current user added to the group automatically
+👋 About the Author
+Lewis Webb — Cloud-native DevOps & Platform Engineer 🎯 
+Please check out my portfolio at  https://lewis-webb-portfolio-webpage-ezczesgjdtgmdfb3.uksouth-01.azurewebsites.net/# 
+as well as my other GitHub projects and my LinkedIn. 
 
-Group assigned Key Vault Secrets User role via azurerm_role_assignment
-
-SSH private key uploaded manually via Azure CLI for secure testing
-
-### 🔧 Manual Secret Upload (Example)
-bash
-az keyvault secret set --vault-name kv-lewis-secure --name ssh-private-key --file ~/.ssh/id_rsa
-
-### 📁 Terraform Highlights
-hcl
-resource "azuread_group" "kv_access_group" { ... }
-
-resource "azuread_group_member" "lewis_in_group" { ... }
-
-resource "azurerm_role_assignment" "kv_group_access" { ... }
-
-resource "azurerm_key_vault" "kv" { ... }
-### 🧠 Access Model
-Access is granted via Azure Entra ID using RBAC. No passwords or access policies are used. Only members of the provisioned group can access secrets.
-
-## 📌 Next Steps
-Deploy frontend app or API to frontend VM
-
-Harden NSG rules for frontend-to-backend or frontend-to-SQL access
-
-Add architecture diagram and flow documentation
