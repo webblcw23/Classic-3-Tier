@@ -69,6 +69,8 @@ module "sql" {
   sql_admin_password  = var.sql_admin_password
   db_subnet_id        = module.network.subnet_ids["db"]
   private_dns_zone_id = azurerm_private_dns_zone.sql_dns.id
+  sql_server_name     = module.sql.sql_server_name
+  sql_db_name         = module.sql.sql_db_name
 }
 
 

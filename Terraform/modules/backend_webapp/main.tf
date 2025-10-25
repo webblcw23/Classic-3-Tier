@@ -31,3 +31,5 @@ resource "azurerm_linux_web_app" "backend_web_app" {
     "DB_PASSWORD" = var.sql_admin_password
   }
 }
+
+

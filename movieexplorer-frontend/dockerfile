@@ -33,3 +33,11 @@ CMD ["nginx", "-g", "daemon off;"]
 #     az acr login --name lewisacr
 #     docker tag movieexplorer-frontend lewisacr.azurecr.io/movieexplorer-frontend:latest
 #     docker push lewisacr.azurecr.io/movieexplorer-frontend:latest
+
+
+# npm run build
+# docker build --platform linux/amd64 -t movieexplorer-frontend .
+# docker tag movieexplorer-frontend lewisacr.azurecr.io/movieexplorer-frontend:latest
+# docker push lewisacr.azurecr.io/movieexplorer-frontend:latest
+
+

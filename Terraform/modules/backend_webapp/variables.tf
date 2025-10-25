@@ -34,7 +34,6 @@ variable "image_tag" {
   description = "Docker image tag (e.g., latest)"
 }
 
-
 variable "sql_server_name" {
   type        = string
   description = "SQL Server name"

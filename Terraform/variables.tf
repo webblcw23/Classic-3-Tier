@@ -31,6 +31,7 @@ variable "sql_admin_password" {
   sensitive   = true
 }
 
+
 # Key Vault Variables
 variable "key_vault_name" {
   description = "The name of the Key Vault"

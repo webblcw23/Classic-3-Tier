@@ -28,3 +28,13 @@ variable "private_dns_zone_id" {
   description = "ID of the Private DNS Zone for Azure SQL"
 }
 
+variable "sql_server_name" {
+  type        = string
+  description = "Name of the Azure SQL Server"
+}
+
+variable "sql_db_name" {
+  type        = string
+  description = "Name of the Azure SQL Database"
+}
+

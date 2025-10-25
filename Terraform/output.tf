@@ -21,11 +21,11 @@ output "sql_server_name" {
   value = module.sql.sql_server_name
 }
 
-output "db_username" {
+output "sql_admin_username" {
   value = var.sql_admin_username
 }
 
-output "db_password" {
+output "sql_admin_password" {
   value     = var.sql_admin_password
   sensitive = true
 }
