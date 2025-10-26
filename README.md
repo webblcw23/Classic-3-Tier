@@ -109,3 +109,9 @@ Lewis Webb — Cloud-native DevOps & Platform Engineer 🎯
 Please check out my portfolio at  https://lewis-webb-portfolio-webpage-ezczesgjdtgmdfb3.uksouth-01.azurewebsites.net/# 
 as well as my other GitHub projects and my LinkedIn. 
 
+<img width="1440" height="769" alt="me00" src="https://github.com/user-attachments/assets/dc90d842-be37-46c5-ba6c-94daee29ad5e" />
+<img width="1440" height="769" alt="me1" src="https://github.com/user-attachments/assets/48e2d1cd-a0b4-4863-a263-94c265464e34" />
+
+
+
+
