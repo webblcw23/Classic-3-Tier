@@ -1,19 +1,18 @@
 trigger:
   none
-
 pool:
   vmImage: 'ubuntu-latest'
-
 variables:
-  workingDir: 'Terraform/'
-  backendKey: 'movieexplorer-prod.tfstate'
-  resourceGroup: 'movie-explorer-rg'
-  storageAccount: 'lewisfuncstorage'
-  containerName: 'tfstate'
-  subscription_id: '$(subscription_id)'
-  sql_admin_username: '$(sql_admin_username)'
-  sql_admin_password: '$(sql_admin_password)'
-
+- name: workingDir
+  value: 'Terraform/'
+- name: backendKey
+  value: 'movieexplorer-prod.tfstate'
+- name: resourceGroup
+  value: 'movie-explorer-rg'
+- name: storageAccount
+  value: 'lewisfuncstorage'
+- name: containerName
+  value: 'tfstate'
 stages:
 - stage: DeployInfra
   displayName: "Terraform Apply Stage"
@@ -21,80 +20,43 @@ stages:
   - job: ApplyInfra
     displayName: "Run Terraform Apply"
     steps:
-
     - task: TerraformInstaller@1
       displayName: "Install Terraform"
       inputs:
         terraformVersion: 'latest'
-
     - task: TerraformTaskV4@4
       displayName: "Terraform Init"
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: ${{ variables.workingDir }}
+        workingDirectory: Terraform/
         backendServiceArm: 'ADOToSubscription'
-        backendAzureRmResourceGroupName: ${{ variables.resourceGroup }}
-        backendAzureRmStorageAccountName: ${{ variables.storageAccount }}
-        backendAzureRmContainerName: ${{ variables.containerName }}
-        backendAzureRmKey: ${{ variables.backendKey }}
+        backendAzureRmResourceGroupName: movie-explorer-rg
+        backendAzureRmStorageAccountName: lewisfuncstorage
+        backendAzureRmContainerName: tfstate
+        backendAzureRmKey: movieexplorer-prod.tfstate
         commandOptions: '-reconfigure -upgrade'
-
-    - task: Bash@3
-      displayName: "Import Existing Resources into State"
-      inputs:
-        targetType: 'inline'
-        script: |
-          set +e
-          cd ${{ variables.workingDir }}
-
-          echo "Initializing Terraform..."
-          terraform init -reconfigure -upgrade
-
-          echo "Importing Resource Group..."
-          terraform import \
-            -var="subscription_id=dummy" \
-            -var="sql_admin_username=dummy" \
-            -var="sql_admin_password=dummy" \
-            azurerm_resource_group.rg "/subscriptions/$subscription_id/resourceGroups/${{ variables.resourceGroup }}"
-
-          echo "Importing ACR..."
-          terraform import \
-            -var="subscription_id=dummy" \
-            -var="sql_admin_username=dummy" \
-            -var="sql_admin_password=dummy" \
-            azurerm_container_registry.acr "/subscriptions/$subscription_id/resourceGroups/${{ variables.resourceGroup }}/providers/Microsoft.ContainerRegistry/registries/lewisacr"
-
-          exit 0
-
     - task: TerraformTaskV4@4
       displayName: "Terraform Validate"
       inputs:
         provider: 'azurerm'
         command: 'validate'
-        workingDirectory: ${{ variables.workingDir }}
-
+        workingDirectory: Terraform/
     - task: TerraformTaskV4@4
       displayName: "Terraform Plan"
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        workingDirectory: ${{ variables.workingDir }}
+        workingDirectory: Terraform/
         environmentServiceNameAzureRM: 'ADOToSubscription'
         commandOptions: >
-          -var subscription_id=${{ variables.subscription_id }}
-          -var sql_admin_username=${{ variables.sql_admin_username }}
-          -var sql_admin_password=${{ variables.sql_admin_password }}
-
+          -var subscription_id=$(subscription_id) -var sql_admin_username=$(sql_admin_username) -var sql_admin_password=$(sql_admin_password)
     - task: TerraformTaskV4@4
       displayName: "Terraform Apply"
       inputs:
         provider: 'azurerm'
         command: 'apply'
-        workingDirectory: ${{ variables.workingDir }}
+        workingDirectory: Terraform/
         environmentServiceNameAzureRM: 'ADOToSubscription'
         commandOptions: >
-          -auto-approve
-          -var subscription_id=${{ variables.subscription_id }}
-          -var sql_admin_username=${{ variables.sql_admin_username }}
-          -var sql_admin_password=${{ variables.sql_admin_password }}
+          -auto-approve -var subscription_id=$(subscription_id) -var sql_admin_username=$(sql_admin_username) -var sql_admin_password=$(sql_admin_password)
