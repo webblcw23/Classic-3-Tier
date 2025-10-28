@@ -30,3 +30,8 @@ stages:
           provider: 'azurerm'
           command: 'destroy'
           environmentServiceNameAzureRM: 'ADOToSubscription'
+          backendServiceArm: 'ADOToSubscription'
+          backendAzureRmResourceGroupName: 'movie-explorer-rg'
+          backendAzureRmStorageAccountName: 'lewisfuncstorage'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
