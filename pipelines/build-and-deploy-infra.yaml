@@ -1,40 +1,72 @@
-# Initial infrastructure build and deploy pipeline for MovieExplorer application.
-# Note - Resource group and ACR must be pre-created before running this pipeline.
-# CLI command to create resource group and ACR:
-# az group create --name movieexplorer-rg --location eastus
-# az acr create --resource-group movieexplorer-rg --name lewisacr --sku
+trigger:
+  none
 
-
-trigger: none
- # branches:
-   # include:
-    #  - main
+pool:
+  vmImage: 'ubuntu-latest'
 
 variables:
-  environment: 'prod'
+  workingDir: 'Terraform/'
+  backendKey: 'movieexplorer-prod.tfstate'
+  resourceGroup: 'movie-explorer-rg'
+  storageAccount: 'lewisfuncstorage'
+  containerName: 'tfstate'
+  # These will be securely set in the pipeline UI or variable group
+  subscription_id: '$(subscription_id)'
+  sql_admin_username: '$(sql_admin_username)'
+  sql_admin_password: '$(sql_admin_password)'
 
 stages:
-  - stage: ProvisionInfra
-    jobs:
-      - job: TerraformApply
-        steps:
-          - script: terraform init
-          - script: terraform apply -auto-approve
-          - script: echo "Infrastructure provisioned successfully."
+- stage: DeployInfra
+  displayName: "Terraform Apply Stage"
+  jobs:
+  - job: ApplyInfra
+    displayName: "Run Terraform Apply"
+    steps:
 
-  - stage: DeployApp
-    jobs:
-      - job: BuildPushImage
-        steps:
-          - script: docker build -t movieexplorer:latest .
-          - script: docker tag movieexplorer:latest lewisacr.azurecr.io/movieexplorer:latest
-          - script: docker push lewisacr.azurecr.io/movieexplorer:latest
-          - script: echo "Docker image built and pushed successfully to Azure ACR."
+    - task: TerraformInstaller@1
+      displayName: "Install Terraform"
+      inputs:
+        terraformVersion: 'latest'
 
-      - job: DeployToAppService
-        steps:
-          - task: AzureWebAppContainer@1
-            inputs:
-              appName: 'movieexplorer-app'
-              imageName: 'lewisacr.azurecr.io/movieexplorer:latest'
-          - script: echo "Application deployed to Azure App Service successfully."
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Init"
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: ${{ variables.workingDir }}
+        backendServiceArm: 'ADOToSubscription'
+        backendAzureRmResourceGroupName: ${{ variables.resourceGroup }}
+        backendAzureRmStorageAccountName: ${{ variables.storageAccount }}
+        backendAzureRmContainerName: ${{ variables.containerName }}
+        backendAzureRmKey: ${{ variables.backendKey }}
+        commandOptions: '-reconfigure -upgrade'
+
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Validate"
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: ${{ variables.workingDir }}
+
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Plan"
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: ${{ variables.workingDir }}
+        commandOptions: >
+          -var subscription_id=${{ variables.subscription_id }}
+          -var sql_admin_username=${{ variables.sql_admin_username }}
+          -var sql_admin_password=${{ variables.sql_admin_password }}
+
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Apply"
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: ${{ variables.workingDir }}
+        commandOptions: >
+          -auto-approve
+          -var subscription_id=${{ variables.subscription_id }}
+          -var sql_admin_username=${{ variables.sql_admin_username }}
+          -var sql_admin_password=${{ variables.sql_admin_password }}
