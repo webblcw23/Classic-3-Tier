@@ -23,8 +23,8 @@ stages:
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
           commandOptions: >
-            -var sqlusername=$(sqlusername)
-            -var sqlpassword=$(sqlpassword)
+            -var sql_admin_username=$(sqlusername)
+            -var sql_admin_password=$(sqlpassword)
             -var subscription_id=$(subscription_id)
           workingDirectory: 'Terraform/'
 
@@ -40,8 +40,8 @@ stages:
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
           commandOptions: >
-            -var sqlusername=$(sqlusername)
-            -var sqlpassword=$(sqlpassword)
+            -var sql_admin_username=$(sqlusername)
+            -var sql_admin_password=$(sqlpassword)
             -var subscription_id=$(subscription_id)
             -auto-approve
           workingDirectory: 'Terraform/'
