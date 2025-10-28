@@ -23,7 +23,7 @@ stages:
           backendAzureRmResourceGroupName: 'movie-explorer-rg'
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'movieexplorer-prod.tfstate'  # 👈 match exact blob name
+          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'  # 👈 match exact blob name
           workingDirectory: 'Terraform/'
 
 
