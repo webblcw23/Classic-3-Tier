@@ -1,0 +1,35 @@
+# Initial infrastructure build and deploy pipeline for MovieExplorer application.
+
+trigger: none
+ # branches:
+   # include:
+    #  - main
+
+variables:
+  environment: 'prod'
+
+stages:
+  - stage: ProvisionInfra
+    jobs:
+      - job: TerraformApply
+        steps:
+          - script: terraform init
+          - script: terraform apply -auto-approve
+          - script: echo "Infrastructure provisioned successfully."
+
+  - stage: DeployApp
+    jobs:
+      - job: BuildPushImage
+        steps:
+          - script: docker build -t movieexplorer:latest .
+          - script: docker tag movieexplorer:latest lewisacr.azurecr.io/movieexplorer:latest
+          - script: docker push lewisacr.azurecr.io/movieexplorer:latest
+          - script: echo "Docker image built and pushed successfully to Azure ACR."
+
+      - job: DeployToAppService
+        steps:
+          - task: AzureWebAppContainer@1
+            inputs:
+              appName: 'movieexplorer-app'
+              imageName: 'lewisacr.azurecr.io/movieexplorer:latest'
+          - script: echo "Application deployed to Azure App Service successfully."

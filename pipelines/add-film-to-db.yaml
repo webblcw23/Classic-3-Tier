@@ -1,0 +1,43 @@
+# Custom input to add a film to the SQL database
+inputs:
+  filmTitle:
+    description: 'Title of the film to add to the database'
+    required: true
+    type: string
+  genre:
+    description: 'Genre of the film'
+    required: true
+    type: string
+  releaseYear:
+    description: 'Release year of the film'
+    required: true
+    type: string
+  rating:
+    description: 'Rating of the film'
+    required: true
+    type: string
+  description:
+    description: 'Description of the film'
+    required: false
+    type: string
+
+steps:
+  - script: |
+      #!/bin/bash
+      FILM_TITLE="${{ inputs.filmTitle }}"
+      GENRE="${{ inputs.genre }}"
+      RELEASE_YEAR="${{ inputs.releaseYear }}"
+      RATING="${{ inputs.rating }}"
+      DESCRIPTION="${{ inputs.description }}"
+
+      # Command to add film to the database
+      echo "Adding film to database: $FILM_TITLE, Genre: $GENRE, Release Year: $RELEASE_YEAR, Rating: $RATING, Description: $DESCRIPTION"
+      # Here you would add the actual command to insert the film into your database
+    displayName: 'Add Film to Database'
+
+outputs:
+  - filmTitle
+  - genre
+  - releaseYear
+  - rating
+  - description

@@ -1,0 +1,21 @@
+# Once the App and infrastructure is live and running. This pipeline with accomodate any changes made to the application code.
+# Once deplayed, the frontend backend web app services will be restarted.
+
+name: Redeploy Application
+trigger: none
+#  branches:
+ #   include:
+  #    - main
+
+variables:
+  environment: 'prod'
+
+stages:
+  - stage: RedeployApp
+    jobs:
+      - job: RedeployJob
+        steps:
+          - script: docker build -t movieexplorer:latest .
+          - script: docker tag movieexplorer:latest lewisacr.azurecr.io/movieexplorer:latest
+          - script: docker push lewisacr.azurecr.io/movieexplorer:latest
+          - script: echo "Docker image built and pushed successfully to Azure ACR."

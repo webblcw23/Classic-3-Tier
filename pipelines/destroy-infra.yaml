@@ -1,0 +1,16 @@
+# A gated pipelines to destroy all infrastructure created by the deploy-infra pipeline.
+
+trigger:
+  none
+
+variables:
+  environment: 'prod'
+
+stages:
+  - stage: DestroyInfra
+    jobs:
+      - job: TerraformDestroy
+        steps:
+          - script: terraform init
+          - script: terraform destroy -auto-approve
+          - script: echo "Infrastructure destroyed successfully."
