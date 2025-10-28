@@ -53,10 +53,13 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          set +e  # Allow errors without failing the pipeline
-          terraform import azurerm_resource_group.rg "/subscriptions/$(subscription_id)/resourceGroups/movie-explorer-rg"
-          terraform import azurerm_container_registry.acr "/subscriptions/$(subscription_id)/resourceGroups/movie-explorer-rg/providers/Microsoft.ContainerRegistry/registries/lewisacr"
-          exit 0  # Always succeed
+          set +e
+          cd Terraform
+          echo "Importing RG..."
+          terraform import azurerm_resource_group.rg "/subscriptions/$subscription_id/resourceGroups/movie-explorer-rg"
+          echo "Importing ACR..."
+          terraform import azurerm_container_registry.acr "/subscriptions/$subscription_id/resourceGroups/movie-explorer-rg/providers/Microsoft.ContainerRegistry/registries/lewisacr"
+          exit 0
 
 
     - task: TerraformTaskV4@4
