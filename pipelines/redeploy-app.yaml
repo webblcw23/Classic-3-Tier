@@ -7,9 +7,6 @@ trigger: none
  #   include:
   #    - main
 
-variables:
-  environment: 'prod'
-
 stages:
   - stage: RedeployApp
     jobs:
