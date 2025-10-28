@@ -12,6 +12,21 @@ stages:
       - task: TerraformInstaller@1
         inputs:
           terraformVersion: 'latest'
+
+      - task: TerraformTask@5
+        displayName: "TerraformShowTask"
+        inputs:
+          provider: 'azurerm'
+          command: 'show'
+          environmentServiceNameAzureRM: 'ADOToSubscription'
+          backendServiceArm: 'ADOToSubscription'
+          backendAzureRmResourceGroupName: 'movie-explorer-rg'
+          backendAzureRmStorageAccountName: 'lewisfuncstorage'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'movieexplorer-prod.tfstate'  # 👈 match exact blob name
+          workingDirectory: 'Terraform/'
+
+
       - task: TerraformTask@5
         displayName: "TerraformInitTask"
         inputs:
