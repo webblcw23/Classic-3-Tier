@@ -32,7 +32,7 @@ stages:
       inputs:
         command: 'buildAndPush'
         repository: '$(dockerRegistry)/$(frontendImageName)'
-        dockerfile: 'movieexplorer-frontend/Dockerfile'
+        dockerfile: 'movieexplorer-frontend/dockerfile'
         buildContext: 'movieexplorer-frontend'
         tags: |
           latest
