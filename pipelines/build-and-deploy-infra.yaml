@@ -60,6 +60,10 @@ stages:
           echo "Importing ACR..."
           terraform import azurerm_container_registry.acr "/subscriptions/$subscription_id/resourceGroups/movie-explorer-rg/providers/Microsoft.ContainerRegistry/registries/lewisacr"
           exit 0
+            commandOptions: >
+          -var subscription_id=${{ variables.subscription_id }}
+          -var sql_admin_username=${{ variables.sql_admin_username }}
+          -var sql_admin_password=${{ variables.sql_admin_password }}
 
 
     - task: TerraformTaskV4@4
