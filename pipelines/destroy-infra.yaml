@@ -14,20 +14,6 @@ stages:
           terraformVersion: 'latest'
 
       - task: TerraformTask@5
-        displayName: "TerraformShowTask"
-        inputs:
-          provider: 'azurerm'
-          command: 'show'
-          environmentServiceNameAzureRM: 'ADOToSubscription'
-          backendServiceArm: 'ADOToSubscription'
-          backendAzureRmResourceGroupName: 'movie-explorer-rg'
-          backendAzureRmStorageAccountName: 'lewisfuncstorage'
-          backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'  # 👈 match exact blob name
-          workingDirectory: 'Terraform/'
-
-
-      - task: TerraformTask@5
         displayName: "TerraformInitTask"
         inputs:
           provider: 'azurerm'
@@ -44,6 +30,21 @@ stages:
             -var sql_admin_password=$(sqlpassword)
             -var subscription_id=$(subscription_id)
           workingDirectory: 'Terraform/'
+
+
+      - task: TerraformTask@5
+        displayName: "TerraformShowTask"
+        inputs:
+          provider: 'azurerm'
+          command: 'show'
+          environmentServiceNameAzureRM: 'ADOToSubscription'
+          backendServiceArm: 'ADOToSubscription'
+          backendAzureRmResourceGroupName: 'movie-explorer-rg'
+          backendAzureRmStorageAccountName: 'lewisfuncstorage'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'  # 👈 match exact blob name
+          workingDirectory: 'Terraform/'
+
 
       - task: TerraformTask@5
         displayName: "TerraformDestroyTask"
