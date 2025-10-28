@@ -21,8 +21,9 @@ stages:
           backendAzureRmResourceGroupName: 'movie-explorer-rg'
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'movieexplorer-prod.tfstate'
+          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
           commandOptions: >
+            -reconfigure
             -var sql_admin_username=$(sqlusername)
             -var sql_admin_password=$(sqlpassword)
             -var subscription_id=$(subscription_id)
@@ -38,7 +39,7 @@ stages:
           backendAzureRmResourceGroupName: 'movie-explorer-rg'
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'movieexplorer-prod.tfstate'
+          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
           commandOptions: >
             -var sql_admin_username=$(sqlusername)
             -var sql_admin_password=$(sqlpassword)
