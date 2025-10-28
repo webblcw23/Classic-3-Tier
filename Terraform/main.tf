@@ -1,5 +1,6 @@
 # Providers in the Provider.tf file
 
+
 # Create a resource group
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
@@ -23,7 +24,7 @@ resource "azurerm_container_registry" "acr" {
 
 
 # Storage Account 
-resource "azurerm_storage_account" "functions_storage" {
+resource "azurerm_storage_account" "storage_account" {
   name                     = "lewisfuncstorage"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = var.location
@@ -31,6 +32,20 @@ resource "azurerm_storage_account" "functions_storage" {
   account_replication_type = "LRS"
 }
 
+# Storage Container for state file
+resource "azurerm_storage_container" "tfstate" {
+  name                  = "tfstate"
+  storage_account_id  = azurerm_storage_account.storage_account.id
+  container_access_type = "private"
+}
+# Storage Blob for state file
+resource "azurerm_storage_blob" "tfstate_blob" {
+  name                   = "movieexplorer-prod.tfstate"
+  storage_account_name   = azurerm_storage_account.storage_account.name
+  storage_container_name = azurerm_storage_container.tfstate.name
+  type                   = "Block"
+  size                   = 0
+}
 
 
 # Create a virtual network using module

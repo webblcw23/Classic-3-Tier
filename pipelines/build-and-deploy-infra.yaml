@@ -1,4 +1,9 @@
 # Initial infrastructure build and deploy pipeline for MovieExplorer application.
+# Note - Resource group and ACR must be pre-created before running this pipeline.
+# CLI command to create resource group and ACR:
+# az group create --name movieexplorer-rg --location eastus
+# az acr create --resource-group movieexplorer-rg --name lewisacr --sku
+
 
 trigger: none
  # branches:

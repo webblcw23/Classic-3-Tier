@@ -3,8 +3,7 @@
 variable "resource_group_name" {
   description = "The name of the resource group"
   type        = string
-  default     = "Network-Proj-RG"
-  # default     = "Movie-Explorer-RG"
+  default     = "movie-explorer-rg"
 }
 
 variable "location" {
