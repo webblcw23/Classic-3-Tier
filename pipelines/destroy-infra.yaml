@@ -22,7 +22,7 @@ stages:
           backendAzureRmResourceGroupName: 'movie-explorer-rg'
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
+          backendAzureRmKey: 'movieexplorer-prod.tfstate'
           commandOptions: >
             -upgrade
             -reconfigure
@@ -42,7 +42,7 @@ stages:
           backendAzureRmResourceGroupName: 'movie-explorer-rg'
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'  # 👈 match exact blob name
+          backendAzureRmKey: 'movieexplorer-prod.tfstate'  # 👈 match exact blob name
           workingDirectory: 'Terraform/'
 
 
@@ -56,7 +56,7 @@ stages:
           backendAzureRmResourceGroupName: 'movie-explorer-rg'
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
+          backendAzureRmKey: 'movieexplorer-prod.tfstate'
           commandOptions: >
             -var sql_admin_username=$(sqlusername)
             -var sql_admin_password=$(sqlpassword)
