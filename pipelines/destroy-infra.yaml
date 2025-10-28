@@ -24,6 +24,7 @@ stages:
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
+          workingDirectory: 'Terraform/'
 
       - task: TerraformTask@5
         inputs:
@@ -35,3 +36,4 @@ stages:
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
+          workingDirectory: 'Terraform/'
