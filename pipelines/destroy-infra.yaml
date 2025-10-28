@@ -4,7 +4,12 @@ trigger:
   none
 
 variables:
-  environment: 'prod'
+  - name : sqlusername
+    value: $(sqlusername)
+  - name: sqlpassword
+    value: $(sqlpassword)  # secret variable
+  - name: subscription_id
+    value: $(subscription_id)  
 
 stages:
   - stage: DestroyInfra
@@ -24,6 +29,11 @@ stages:
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
+          commandOptions: >
+            -var sqlusername=$(sqlusername)
+            -var sqlpassword=$(sqlpassword)
+            -var subscription_id=$(subscription_id)
+            -auto-approve
           workingDirectory: 'Terraform/'
 
       - task: TerraformTask@5
@@ -36,4 +46,9 @@ stages:
           backendAzureRmStorageAccountName: 'lewisfuncstorage'
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
+          commandOptions: >
+            -var sqlusername=$(sqlusername)
+            -var sqlpassword=$(sqlpassword)
+            -var subscription_id=$(subscription_id)
+            -auto-approve
           workingDirectory: 'Terraform/'
