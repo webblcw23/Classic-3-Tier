@@ -4,13 +4,18 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">= 3.0.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 2.0.0"
+    }
   }
 }
 
-# Provider - Azure
 provider "azurerm" {
   features {}
-  subscription_id = "91c0fe80-4528-4bf2-9796-5d0f2a250518"
+  use_oidc = true
 }
 
-provider "azuread" {}
+provider "azuread" {
+  use_oidc = true
+}
