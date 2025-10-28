@@ -10,7 +10,6 @@ variables:
   resourceGroup: 'movie-explorer-rg'
   storageAccount: 'lewisfuncstorage'
   containerName: 'tfstate'
-  # These will be securely set in the pipeline UI or variable group
   subscription_id: '$(subscription_id)'
   sql_admin_username: '$(sql_admin_username)'
   sql_admin_password: '$(sql_admin_password)'
@@ -41,6 +40,33 @@ stages:
         backendAzureRmKey: ${{ variables.backendKey }}
         commandOptions: '-reconfigure -upgrade'
 
+    - task: Bash@3
+      displayName: "Import Existing Resources into State"
+      inputs:
+        targetType: 'inline'
+        script: |
+          set +e
+          cd ${{ variables.workingDir }}
+
+          echo "Initializing Terraform..."
+          terraform init -reconfigure -upgrade
+
+          echo "Importing Resource Group..."
+          terraform import \
+            -var="subscription_id=dummy" \
+            -var="sql_admin_username=dummy" \
+            -var="sql_admin_password=dummy" \
+            azurerm_resource_group.rg "/subscriptions/$subscription_id/resourceGroups/${{ variables.resourceGroup }}"
+
+          echo "Importing ACR..."
+          terraform import \
+            -var="subscription_id=dummy" \
+            -var="sql_admin_username=dummy" \
+            -var="sql_admin_password=dummy" \
+            azurerm_container_registry.acr "/subscriptions/$subscription_id/resourceGroups/${{ variables.resourceGroup }}/providers/Microsoft.ContainerRegistry/registries/lewisacr"
+
+          exit 0
+
     - task: TerraformTaskV4@4
       displayName: "Terraform Validate"
       inputs:
@@ -48,31 +74,13 @@ stages:
         command: 'validate'
         workingDirectory: ${{ variables.workingDir }}
 
-    - task: Bash@3
-      displayName: "Import Existing Resources into State"
-      inputs:
-        targetType: 'inline'
-        script: |
-          set +e
-          cd Terraform
-          echo "Importing RG..."
-          terraform import azurerm_resource_group.rg "/subscriptions/$subscription_id/resourceGroups/movie-explorer-rg"
-          echo "Importing ACR..."
-          terraform import azurerm_container_registry.acr "/subscriptions/$subscription_id/resourceGroups/movie-explorer-rg/providers/Microsoft.ContainerRegistry/registries/lewisacr"
-          exit 0
-            commandOptions: >
-          -var subscription_id=${{ variables.subscription_id }}
-          -var sql_admin_username=${{ variables.sql_admin_username }}
-          -var sql_admin_password=${{ variables.sql_admin_password }}
-
-
     - task: TerraformTaskV4@4
       displayName: "Terraform Plan"
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        environmentServiceNameAzureRM: 'ADOToSubscription'
         workingDirectory: ${{ variables.workingDir }}
+        environmentServiceNameAzureRM: 'ADOToSubscription'
         commandOptions: >
           -var subscription_id=${{ variables.subscription_id }}
           -var sql_admin_username=${{ variables.sql_admin_username }}
@@ -83,11 +91,10 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'apply'
-        environmentServiceNameAzureRM: 'ADOToSubscription'
         workingDirectory: ${{ variables.workingDir }}
+        environmentServiceNameAzureRM: 'ADOToSubscription'
         commandOptions: >
           -auto-approve
           -var subscription_id=${{ variables.subscription_id }}
           -var sql_admin_username=${{ variables.sql_admin_username }}
           -var sql_admin_password=${{ variables.sql_admin_password }}
-    - script: echo "Terrafom Apply Complete"
