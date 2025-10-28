@@ -3,14 +3,6 @@
 trigger:
   none
 
-variables:
-  - name : sqlusername
-    value: $(sqlusername)
-  - name: sqlpassword
-    value: $(sqlpassword)  # secret variable
-  - name: subscription_id
-    value: $(subscription_id)  
-
 stages:
   - stage: DestroyInfra
     jobs:
@@ -21,6 +13,7 @@ stages:
         inputs:
           terraformVersion: 'latest'
       - task: TerraformTask@5
+        displayName: "TerraformInitTask"
         inputs:
           provider: 'azurerm'
           command: 'init'
@@ -37,6 +30,7 @@ stages:
           workingDirectory: 'Terraform/'
 
       - task: TerraformTask@5
+        displayName: "TerraformDestroyTask"
         inputs:
           provider: 'azurerm'
           command: 'destroy'
