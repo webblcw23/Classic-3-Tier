@@ -53,6 +53,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'plan'
+        environmentServiceNameAzureRM: 'ADOToSubscription'
         workingDirectory: ${{ variables.workingDir }}
         commandOptions: >
           -var subscription_id=${{ variables.subscription_id }}
@@ -64,6 +65,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'apply'
+        environmentServiceNameAzureRM: 'ADOToSubscription'
         workingDirectory: ${{ variables.workingDir }}
         commandOptions: >
           -auto-approve
