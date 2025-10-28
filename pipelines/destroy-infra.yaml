@@ -9,8 +9,18 @@ variables:
 stages:
   - stage: DestroyInfra
     jobs:
-      - job: TerraformDestroy
-        steps:
-          - script: terraform init
-          - script: terraform destroy -auto-approve
-          - script: echo "Infrastructure destroyed successfully."
+    - job: Terraform_Destroy_Job
+      steps: 
+
+      - task: TerraformInstaller@1
+        inputs:
+          terraformVersion: 'latest'
+      - task: TerraformTask@5
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          backendServiceArm: 'ADOToSubscription'
+          backendAzureRmResourceGroupName: 'movie-explorer-rg'
+          backendAzureRmStorageAccountName: 'lewisfuncstorage'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'tfstate/movieexplorer-prod.tfstate'
