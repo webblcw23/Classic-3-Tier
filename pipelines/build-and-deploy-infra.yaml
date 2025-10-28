@@ -48,6 +48,17 @@ stages:
         command: 'validate'
         workingDirectory: ${{ variables.workingDir }}
 
+    - task: Bash@3
+      displayName: "Import Existing Resources into State"
+      inputs:
+        targetType: 'inline'
+        script: |
+          set +e  # Allow errors without failing the pipeline
+          terraform import azurerm_resource_group.rg "/subscriptions/$(subscription_id)/resourceGroups/movie-explorer-rg"
+          terraform import azurerm_container_registry.acr "/subscriptions/$(subscription_id)/resourceGroups/movie-explorer-rg/providers/Microsoft.ContainerRegistry/registries/lewisacr"
+          exit 0  # Always succeed
+
+
     - task: TerraformTaskV4@4
       displayName: "Terraform Plan"
       inputs:
