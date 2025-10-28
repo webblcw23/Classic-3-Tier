@@ -1,0 +1,69 @@
+#Core pipeline to deploy RG, Storage and ACR
+trigger:
+  none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  location: 'uksouth'
+  resourceGroup: 'movie-explorer-rg'
+  storageAccount: 'lewisfuncstorage'
+  containerName: 'tfstate'
+  acrName: 'lewisacr'
+
+stages:
+- stage: CoreInfra
+  displayName: "Provision Core Infrastructure"
+  jobs:
+  - job: SetupCore
+    displayName: "Create RG, Storage, ACR"
+    steps:
+
+    - task: AzureCLI@2
+      displayName: "Create Resource Group"
+      inputs:
+        azureSubscription: 'ADOToSubscription'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az group create \
+            --name ${{ variables.resourceGroup }} \
+            --location ${{ variables.location }}
+
+    - task: AzureCLI@2
+      displayName: "Create Storage Account"
+      inputs:
+        azureSubscription: 'ADOToSubscription'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az storage account create \
+            --name ${{ variables.storageAccount }} \
+            --resource-group ${{ variables.resourceGroup }} \
+            --location ${{ variables.location }} \
+            --sku Standard_LRS
+
+    - task: AzureCLI@2
+      displayName: "Create Blob Container for Terraform State"
+      inputs:
+        azureSubscription: 'ADOToSubscription'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az storage container create \
+            --name ${{ variables.containerName }} \
+            --account-name ${{ variables.storageAccount }}
+
+    - task: AzureCLI@2
+      displayName: "Create Azure Container Registry"
+      inputs:
+        azureSubscription: 'ADOToSubscription'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az acr create \
+            --name ${{ variables.acrName }} \
+            --resource-group ${{ variables.resourceGroup }} \
+            --sku Basic \
+            --location ${{ variables.location }}
