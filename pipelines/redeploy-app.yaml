@@ -20,7 +20,7 @@ stages:
       displayName: "Build and Push Backend (AMD64)"
       inputs:
         command: 'buildAndPush'
-        repository: '$(dockerRegistry)/$(backendImageName)'
+        repository: '$(backendImageName)'
         dockerfile: 'movieexplorer-backend-api/Dockerfile'
         buildContext: 'movieexplorer-backend-api'
         tags: |
@@ -31,7 +31,7 @@ stages:
       displayName: "Build and Push Frontend (AMD64)"
       inputs:
         command: 'buildAndPush'
-        repository: '$(dockerRegistry)/$(frontendImageName)'
+        repository: '$(frontendImageName)'
         dockerfile: 'movieexplorer-frontend/dockerfile'
         buildContext: 'movieexplorer-frontend'
         tags: |
