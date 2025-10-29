@@ -38,14 +38,8 @@ resource "azurerm_storage_container" "tfstate" {
   storage_account_id  = azurerm_storage_account.storage_account.id
   container_access_type = "private"
 }
-# Storage Blob for state file
-resource "azurerm_storage_blob" "tfstate_blob" {
-  name                   = "movieexplorer-prod.tfstate"
-  storage_account_name   = azurerm_storage_account.storage_account.name
-  storage_container_name = azurerm_storage_container.tfstate.name
-  type                   = "Block"
-  size                   = 0
-}
+# Storage Blob for state file is handled in backend configuration
+
 
 
 # Create a virtual network using module
