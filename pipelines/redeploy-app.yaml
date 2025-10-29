@@ -38,3 +38,18 @@ stages:
           latest
         arguments: '--platform linux/amd64'
         containerRegistry: 'lewisacr'
+
+    - script: |
+        IP=$(az webapp show \
+          --name MovieExplorerAppBackend \
+          --resource-group movie-explorer-rg \
+          --query outboundIpAddresses -o tsv)
+
+        az sql server firewall-rule create \
+          --resource-group movie-explorer-rg \
+          --server sql-server-lewis-test \
+          --name AllowAppService \
+          --start-ip-address $IP \
+          --end-ip-address $IP
+      displayName: "Add App Service IP to SQL Firewall"
+
